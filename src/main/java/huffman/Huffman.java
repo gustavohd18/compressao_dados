@@ -10,19 +10,50 @@ import java.util.regex.Pattern;
 import java.io.*;
 
 public class Huffman {
+
+    private HashMap tabela = new HashMap<String, String>();
+
     public void encode(String fileName) {
         Map<String, Integer> tabelaFrequencias = contFrequencia(fileName);
         Node arvoreHuffman = geraArvore(tabelaFrequencias);
+        fazTabela(arvoreHuffman);
+        Iterator i = tabela.entrySet().iterator();
+        while(i.hasNext()) {
+            Map.Entry element = (Map.Entry)i.next();
+            System.out.println(element.getKey());
+            System.out.println(element.getValue());
+        }
     }
     private Node geraArvore(Map<String,Integer> tabelaFrequencias) {
         Iterator i = tabelaFrequencias.entrySet().iterator();
-        List<Node> trees = new LinkedList<Node>();
+        List<Node> trees = new LinkedList<>();
         while(i.hasNext()){
             Map.Entry element = (Map.Entry)i.next();
             
-            trees.add(new Node());
+            trees.add(new Node(element.getKey().charAt(0), (int)element.getValue(), null, null));
         }
-        return null;
+
+        Node menor = new Node('h', 0, null, null), segundoMenor = new Node('h', 0, null, null);
+
+        while(trees.size() > 1) {
+            i = trees.iterator();
+            while(i.hasNext()){
+                Node n = (Node)i.next();
+                if(n.freq < menor.freq) {
+                    segundoMenor = menor;
+                    menor = n;
+                } else {
+                    if(n.freq < segundoMenor.freq){
+                        segundoMenor = n;
+                    }
+                }
+                trees.remove(menor);
+                trees.remove(segundoMenor);
+                trees.add(new Node('h', menor.freq + segundoMenor.freq, menor, segundoMenor));
+            }
+        }
+
+        return trees.get(0);
     }
     private Map<String, Integer> contFrequencia(String name) {
         Map<String, Integer> mapPalavras;
@@ -54,5 +85,19 @@ public class Huffman {
             System.out.println(e);
         }
         return mapPalavras;
+    }
+
+    public HashMap<Char, String> fazTabela(Node root){
+        fazCaminhos(root, "");
+        return tabela;
+    }
+
+    private void fazCaminhos(Node n, String cod){
+        if(n.isLeaf()){
+            tabela.put(n.ch, cod);
+        } else {
+            fazCaminhos(n.left, cod.concat("0"));
+            fazCaminhos(n.right, cod.concat("1"));
+        }
     }
 }

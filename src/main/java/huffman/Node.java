@@ -2,7 +2,7 @@ package huffman;
 
 public class Node implements Comparable<Node> {
     private final char ch;
-    private final int freq;
+    public final int freq;
     private final Node left, right;
 
     Node(char ch, int freq, Node left, Node right) {
@@ -13,7 +13,7 @@ public class Node implements Comparable<Node> {
     }
 
     // is the node a leaf node?
-    private boolean isLeaf() {
+    public boolean isLeaf() {
         assert ((left == null) && (right == null)) || ((left != null) && (right != null));
         return (left == null) && (right == null);
     }
