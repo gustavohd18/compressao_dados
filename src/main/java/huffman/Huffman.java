@@ -16,7 +16,6 @@ public class Huffman {
     public void encode(String fileName) {
         Map<String, Integer> tabelaFrequencias = contFrequencia(fileName);
         Node arvoreHuffman = geraArvore(tabelaFrequencias);
-      //  fazTabela(arvoreHuffman);
         Iterator i = fazTabela(arvoreHuffman).entrySet().iterator();
         while(i.hasNext()) {
             Map.Entry element = (Map.Entry)i.next();
@@ -34,24 +33,23 @@ public class Huffman {
         }
         List<Node> clone = new LinkedList<>();
         clone.addAll(trees);
-        Node menor = new Node("h", 0, null, null), segundoMenor = new Node("h", 0, null, null);
-
         while(trees.size() > 1) {
-            Iterator interator = clone.iterator();
+            Node menor = null, segundoMenor = null;
+            Iterator interator = trees.iterator();
             while(interator.hasNext()){
                 Node n = (Node) interator.next();
-                if(n.freq < menor.freq) {
+                if(menor == null || n.freq < menor.freq) {
                     segundoMenor = menor;
                     menor = n;
                 } else {
-                    if(n.freq < segundoMenor.freq){
+                    if(segundoMenor == null || n.freq < segundoMenor.freq){
                         segundoMenor = n;
                     }
                 }
-                trees.remove(menor);
-                trees.remove(segundoMenor);
-                trees.add(new Node("h", menor.freq + segundoMenor.freq, menor, segundoMenor));
             }
+            trees.remove(menor);
+            trees.remove(segundoMenor);
+            trees.add(new Node("h", menor.freq + segundoMenor.freq, menor, segundoMenor));
         }
 
         return trees.get(0);
