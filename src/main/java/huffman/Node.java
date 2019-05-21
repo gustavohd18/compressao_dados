@@ -1,11 +1,12 @@
 package huffman;
 
 public class Node implements Comparable<Node> {
-    private final char ch;
+    final String ch;
     public final int freq;
-    private final Node left, right;
+    final Node left;
+	final Node right;
 
-    Node(char ch, int freq, Node left, Node right) {
+    Node(String ch, int freq, Node left, Node right) {
         this.ch    = ch;
         this.freq  = freq;
         this.left  = left;

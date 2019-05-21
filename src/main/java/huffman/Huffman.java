@@ -16,8 +16,8 @@ public class Huffman {
     public void encode(String fileName) {
         Map<String, Integer> tabelaFrequencias = contFrequencia(fileName);
         Node arvoreHuffman = geraArvore(tabelaFrequencias);
-        fazTabela(arvoreHuffman);
-        Iterator i = tabela.entrySet().iterator();
+      //  fazTabela(arvoreHuffman);
+        Iterator i = fazTabela(arvoreHuffman).entrySet().iterator();
         while(i.hasNext()) {
             Map.Entry element = (Map.Entry)i.next();
             System.out.println(element.getKey());
@@ -30,15 +30,16 @@ public class Huffman {
         while(i.hasNext()){
             Map.Entry element = (Map.Entry)i.next();
             
-            trees.add(new Node(element.getKey().charAt(0), (int)element.getValue(), null, null));
+            trees.add(new Node((String)element.getKey(), (int)element.getValue(), null, null));
         }
-
-        Node menor = new Node('h', 0, null, null), segundoMenor = new Node('h', 0, null, null);
+        List<Node> clone = new LinkedList<>();
+        clone.addAll(trees);
+        Node menor = new Node("h", 0, null, null), segundoMenor = new Node("h", 0, null, null);
 
         while(trees.size() > 1) {
-            i = trees.iterator();
-            while(i.hasNext()){
-                Node n = (Node)i.next();
+            Iterator interator = clone.iterator();
+            while(interator.hasNext()){
+                Node n = (Node) interator.next();
                 if(n.freq < menor.freq) {
                     segundoMenor = menor;
                     menor = n;
@@ -49,7 +50,7 @@ public class Huffman {
                 }
                 trees.remove(menor);
                 trees.remove(segundoMenor);
-                trees.add(new Node('h', menor.freq + segundoMenor.freq, menor, segundoMenor));
+                trees.add(new Node("h", menor.freq + segundoMenor.freq, menor, segundoMenor));
             }
         }
 
@@ -87,7 +88,7 @@ public class Huffman {
         return mapPalavras;
     }
 
-    public HashMap<Char, String> fazTabela(Node root){
+    private HashMap<String, String> fazTabela(Node root){
         fazCaminhos(root, "");
         return tabela;
     }
