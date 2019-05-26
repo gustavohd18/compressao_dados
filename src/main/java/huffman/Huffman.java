@@ -1,10 +1,12 @@
 package huffman;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
@@ -16,7 +18,7 @@ public class Huffman {
     public void encode(String fileName) {
         Map<String, Integer> tabelaFrequencias = contFrequencia(fileName);
         Node arvoreHuffman = geraArvore(tabelaFrequencias);
-        Iterator i = fazTabela(arvoreHuffman).entrySet().iterator();
+        Iterator i = tabelaFrequencias.entrySet().iterator();
         while(i.hasNext()) {
             Map.Entry element = (Map.Entry)i.next();
             System.out.println(element.getKey());
@@ -54,36 +56,29 @@ public class Huffman {
 
         return trees.get(0);
     }
-    private Map<String, Integer> contFrequencia(String name) {
+    private  Hashtable<String,Integer> contFrequencia(String name) {
         Map<String, Integer> mapPalavras;
-
+        Hashtable<String,Integer> frequency =  new Hashtable<>();
         mapPalavras = new HashMap<String, Integer>();
         try {
-            FileInputStream entrada = new FileInputStream(name);
-            InputStreamReader entradaFormatada = new InputStreamReader(entrada);
-            int c = entradaFormatada.read();
-
-            while (c != -1) {
-                Pattern p = Pattern.compile("(\\d+)|([a-záéíóúçãõôê]+)");
-                Matcher m = p.matcher((char) c + "");
-
-                while (m.find()) {
-                    String token = m.group();
-                    Integer freq = mapPalavras.get(token);
-
-                    if (freq != null) {
-                        mapPalavras.put(token, freq + 1);
-                    } else {
-                        mapPalavras.put(token, 1);
-                    }
+        Scanner sc = new Scanner(new FileReader(name));
+        
+        while (sc.hasNextLine()){
+            String line = sc.nextLine();
+            for(int i = 0; i < line.length(); i++) {
+                char c = line.charAt(i);
+                if (frequency.containsKey(c+"")) {
+                    frequency.replace(c+"",frequency.get(c+"") + 1);
+                } else {
+                    frequency.put(c+"", 1);
                 }
-                c = entradaFormatada.read();
             }
-            entradaFormatada.close();
-        } catch (Exception e) {
-            System.out.println(e);
         }
-        return mapPalavras;
+        sc.close();
+    } catch (FileNotFoundException e) {
+        System.out.println("file not found: s.txt");
+    }
+        return frequency;
     }
 
     private HashMap<String, String> fazTabela(Node root){
