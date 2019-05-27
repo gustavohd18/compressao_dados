@@ -7,23 +7,36 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 import java.io.*;
 
 public class Huffman {
 
     private HashMap tabela = new HashMap<String, String>();
 
-    public void encode(String fileName) {
+    public void encode(String fileName) throws IOException {
         Map<String, Integer> tabelaFrequencias = contFrequencia(fileName);
         Node arvoreHuffman = geraArvore(tabelaFrequencias);
-        Iterator i = tabelaFrequencias.entrySet().iterator();
+        Iterator i = fazTabela(arvoreHuffman).entrySet().iterator();
         while(i.hasNext()) {
             Map.Entry element = (Map.Entry)i.next();
             System.out.println(element.getKey());
             System.out.println(element.getValue());
         }
+        BufferedWriter writer = new BufferedWriter(new FileWriter("encode.txt", false));
+        Scanner sc = new Scanner(new FileReader(fileName));
+    
+        createFileHeader(writer);
+    
+        while (sc.hasNextLine()){
+            String line = sc.nextLine();
+            for (int j = 0; j < line.length(); j++) {
+                char c = line.charAt(j);
+                writer.write(fazTabela(arvoreHuffman).get(c+""));
+            }
+        }
+        sc.close();
+        writer.close();
     }
     private Node geraArvore(Map<String,Integer> tabelaFrequencias) {
         Iterator i = tabelaFrequencias.entrySet().iterator();
@@ -57,9 +70,7 @@ public class Huffman {
         return trees.get(0);
     }
     private  Hashtable<String,Integer> contFrequencia(String name) {
-        Map<String, Integer> mapPalavras;
         Hashtable<String,Integer> frequency =  new Hashtable<>();
-        mapPalavras = new HashMap<String, Integer>();
         try {
         Scanner sc = new Scanner(new FileReader(name));
         
@@ -93,5 +104,19 @@ public class Huffman {
             fazCaminhos(n.left, cod.concat("0"));
             fazCaminhos(n.right, cod.concat("1"));
         }
+    }
+    private void createFileHeader(BufferedWriter writer) throws IOException {
+        Set<String> characters = tabela.keySet();
+        boolean firstIteration = true;
+        for(String character: characters){
+            if(firstIteration){
+                writer.write(character + "=" + tabela.get(character));
+                firstIteration = false;
+            } else {
+                writer.write(";");
+                writer.write(character + "=" + tabela.get(character));
+            }
+        }
+        writer.write(" \r\n");
     }
 }
